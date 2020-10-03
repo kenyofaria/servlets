@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+		<input type="button" value="buscar" onclick="requisicaoAjax()"/>
+		<table>
+		
+			<thead>
+				<tr><th>matricula</th><th>nome</th></tr>
+			</thead>
+			
+			
+			<tbody id="tbl-alunos">
+
+			</tbody>
+		</table>
+
+</body>
+
+<script>
+
+	var tabela = document.querySelector("#tbl-alunos");
+
+	function requisicaoAjax(){
+	  var ajax = new XMLHttpRequest();
+	  ajax.onreadystatechange = function() {
+	    if (this.status == 200) {
+			var alunos = JSON.parse(ajax.responseText);
+			atualizaTabela(alunos);
+	    }
+	  };
+	  ajax.open("GET", "alunos", true);
+	  ajax.send();
+	}
+	
+	function atualizaTabela(alunos){
+		//var trs = tabela.querySelectorAll('tr');
+		
+		alunos.forEach(function(aluno) {
+			adicionaAlunoNaTabela(aluno);
+		});
+	}
+	function adicionaAlunoNaTabela(aluno){
+	    var tr = montaTr(aluno);
+	    tabela.appendChild(tr);
+	}
+	function montaTr(aluno){
+	    var tr = document.createElement("tr");
+
+	    var nomeTd = montaTd(aluno.nome);
+	    var matriculaTd = montaTd(aluno.matricula);
+
+	    tr.appendChild(matriculaTd);
+	    tr.appendChild(nomeTd);
+	    
+
+	    return tr;
+	}
+	function montaTd(dado){
+	    var td = document.createElement("td");
+	    td.textContent = dado;
+	    return td;
+	}
+</script>
+
+</html>
