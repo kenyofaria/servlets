@@ -5,65 +5,92 @@
 <title>Insert title here</title>
 </head>
 <body>
-		<input type="button" value="buscar" onclick="requisicaoAjax()"/>
-		<table>
-		
-			<thead>
-				<tr><th>matricula</th><th>nome</th></tr>
-			</thead>
-			
-			
-			<tbody id="tbl-alunos">
+	<table>
 
-			</tbody>
-		</table>
+		<thead>
+			<tr>
+				<th>matricula</th>
+				<th>nome</th>
+			</tr>
+		</thead>
+
+		<!-- 			<a href="????">texto que eu quero que apareca</a> -->
+
+		<tbody id="tbl-alunos">
+
+		</tbody>
+	</table>
 
 </body>
 
 <script>
 
-	var tabela = document.querySelector("#tbl-alunos");
-
-	function requisicaoAjax(){
-	  var ajax = new XMLHttpRequest();
-	  ajax.onreadystatechange = function() {
-	    if (this.status == 200) {
-			var alunos = JSON.parse(ajax.responseText);
-			atualizaTabela(alunos);
-	    }
-	  };
-	  ajax.open("GET", "alunos", true);
-	  ajax.send();
-	}
-	
-	function atualizaTabela(alunos){
-		//var trs = tabela.querySelectorAll('tr');
-		
+ 	var tabela = document.querySelector("#tbl-alunos");
+	function atualizaTabela(alunos) {
 		alunos.forEach(function(aluno) {
 			adicionaAlunoNaTabela(aluno);
 		});
 	}
-	function adicionaAlunoNaTabela(aluno){
-	    var tr = montaTr(aluno);
-	    tabela.appendChild(tr);
+	function adicionaAlunoNaTabela(aluno) {
+		var tr = montaTr(aluno);
+		tabela.appendChild(tr);
 	}
-	function montaTr(aluno){
-	    var tr = document.createElement("tr");
+	function montaTr(aluno) {
+		var tr = document.createElement("tr");
 
-	    var nomeTd = montaTd(aluno.nome);
-	    var matriculaTd = montaTd(aluno.matricula);
+		var nomeTd = montaTd(aluno.nome);
+		var matriculaTd = montaTd(aluno.matricula);
 
-	    tr.appendChild(matriculaTd);
-	    tr.appendChild(nomeTd);
-	    
+		tr.appendChild(matriculaTd);
+		tr.appendChild(nomeTd);
 
-	    return tr;
+		var tdEditar = montaTdControle(aluno, "editar");
+		var tdExcluir = montaTdControle(aluno, "excluir");
+
+		tr.appendChild(tdEditar);
+		tr.appendChild(tdExcluir);
+
+		tr.setAttribute("id", aluno.matricula);
+
+		return tr;
 	}
-	function montaTd(dado){
-	    var td = document.createElement("td");
-	    td.textContent = dado;
-	    return td;
+	
+	function montaTdControle(aluno, tipo) {
+		var link = document.createElement("a");
+
+		const params = new URLSearchParams({
+			matricula : aluno.matricula,
+			operacao : tipo
+		});
+
+		link.textContent = tipo;
+		link.setAttribute('href', "alunos?" + params.toString());
+		link.setAttribute('id', aluno.matricula);
+
+		var tdControle = document.createElement("td");
+
+		tdControle.appendChild(link);
+		return tdControle;
 	}
+
+	function montaTd(dado) {
+		var td = document.createElement("td");
+		td.textContent = dado;
+		return td;
+	}
+	
+	
+	var ajax = new XMLHttpRequest();
+	ajax.responseType="text";
+	ajax.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var alunos = JSON.parse(ajax.responseText);
+			console.log(alunos);
+			atualizaTabela(alunos);
+		}
+	};
+	ajax.open("GET", "alunos", true);
+	ajax.send();
 </script>
 
 </html>

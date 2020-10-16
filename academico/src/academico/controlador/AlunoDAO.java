@@ -1,28 +1,50 @@
 package academico.controlador;
 
 import java.util.List;
-import java.util.Vector;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import academico.entidade.Aluno;
+import academico.jpa.util.JPAUtil;
 
 public class AlunoDAO {
-	
-	private static List<Aluno> alunos = new Vector<>();
 
-	
-	static {
-		alunos.add(new Aluno("111", "Gabriel"));
-		alunos.add(new Aluno("222", "Marcos"));
-		alunos.add(new Aluno("333", "Euripedes"));
-		alunos.add(new Aluno("444", "Jehnifer"));
-		alunos.add(new Aluno("555", "Joao"));
+	private JPAUtil jpaUtil;
+	private EntityManager em;
 
+	public AlunoDAO() {
+		jpaUtil = new JPAUtil();
+		em = jpaUtil.getEntityManager();
 	}
-	
 	
 	public void salva(Aluno aluno) {
-		alunos.add(aluno);
+		em.getTransaction().begin();
+		Aluno existente = get(aluno.getMatricula());
+		if(existente == null) {
+			em.persist(aluno);
+		}else {
+			existente.setMatricula(aluno.getMatricula());
+			existente.setNome(aluno.getNome());
+			em.persist(existente);
+		}
+		em.getTransaction().commit();
 	}
-	
-	public List<Aluno> lista(){
-		return alunos;
+
+
+	public void deleta(Aluno aluno) {
+		em.getTransaction().begin();
+		aluno = em.find(Aluno.class, aluno.getMatricula());
+		em.remove(aluno);
+		em.getTransaction().commit();
+	}
+
+	public List<Aluno> lista() {
+		TypedQuery<Aluno> qry = em.createQuery("from Aluno", Aluno.class);
+		return qry.getResultList();
+	}
+
+	public Aluno get(String matricula) {
+		return em.find(Aluno.class, matricula);
 	}
 }
