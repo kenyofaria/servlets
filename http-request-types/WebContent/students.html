@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Students</title>
+</head>
+<body>
+	<p><a href="student-form.html">add student</a></p>
+	<table>
+		<thead>
+			<tr>
+				<th>register number</th>
+				<th>name</th>
+			</tr>
+		</thead>
+
+		<tbody id="students-table">
+
+		</tbody>
+	</table>
+</body>
+
+<script>
+
+ 	var studentsTable = document.querySelector("#students-table");
+	function tableRefresh(students) {
+		students.forEach(function(student) {
+			addStudentToTable(student);
+		});
+	}
+	function addStudentToTable(student) {
+		var tr = mountTr(student);
+		studentsTable.appendChild(tr);
+	}
+	function mountTr(student) {
+		var tr = document.createElement("tr");
+
+		var nameTd = mountTd(student.name);
+		var registerNumberTd = mountTd(student.registerNumber);
+
+		tr.appendChild(registerNumberTd);
+		tr.appendChild(nameTd);
+
+		var editTd = mountControlTd(student, "edit");
+		var deleteTd = mountControlTd(student, "delete");
+
+		tr.appendChild(editTd);
+		tr.appendChild(deleteTd);
+
+		tr.setAttribute("id", student.registerNumber);
+
+		return tr;
+	}
+	
+	function mountControlTd(student, type) {
+		var link = document.createElement("a");
+
+		const params = new URLSearchParams({
+			registerNumber : student.registerNumber,
+			operation : type
+		});
+
+		link.textContent = type;
+		link.setAttribute('href', "students?" + params.toString());
+		link.setAttribute('id', student.registerNumber);
+
+		var controlTd = document.createElement("td");
+
+		controlTd.appendChild(link);
+		return controlTd;
+	}
+
+	function mountTd(data) {
+		var td = document.createElement("td");
+		td.textContent = data;
+		return td;
+	}
+	
+	
+	var ajax = new XMLHttpRequest();
+	ajax.responseType="text";
+	ajax.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var students = JSON.parse(ajax.responseText);
+			console.log(students);
+			tableRefresh(students);
+		}
+	};
+	ajax.open("GET", "students", true);
+	ajax.send();
+</script>
+
+</html>

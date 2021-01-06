@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Student form</title>
+</head>
+<body>
+	<form action="students" id="form" method="post">
+		<p>
+			<input type="text" id="register-number-input" name="register-number-input"
+				size="30" />
+		</p>
+		<p>
+			<input type="text" id="name-input" name="name-input" size="100" />
+		</p>
+		<p>
+			<input type="submit" id="save-button" name="save-button" value="save" />
+		</p>
+	</form>
+
+</body>
+
+<script type="text/javascript">
+	const searchParams = new URLSearchParams(location.search);
+	if (searchParams.get('registerNumber')) {
+		var ajax = new XMLHttpRequest();
+		ajax.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var student = JSON.parse(ajax.responseText);
+				loadStudentData(student);
+			}
+		};
+		ajax.open("GET", "students?registerNumber=" + searchParams.get('registerNumber')
+				+ "&source=student-form", true);
+		ajax.send();
+	}
+	
+	function loadStudentData(student) {
+		registerNumberInput = document.querySelector('#register-number-input');
+		nameInput = document.querySelector('#name-input');
+
+		registerNumberInput.value = student.registerNumber;
+		nameInput.value = student.name;
+	}
+</script>
+</html>
