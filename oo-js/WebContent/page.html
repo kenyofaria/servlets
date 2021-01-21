@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>OO in JavaScript</title>
+</head>
+<body>
+
+<table>
+	<thead>
+		<tr><th>register number</th><th>name</th></tr>
+	</thead>
+	<tbody id="table">
+	</tbody>
+</table>
+
+</body>
+
+<script src="Student.js"></script>
+
+<script type="text/javascript">
+	
+	var myTable = document.querySelector("#table");
+	var array = new Array();
+	array.push(new Student("123", "kenyo"));
+	array.push(new Student("456", "aldo"));
+	array.push(new Student("789", "marcos"));
+	
+	array.forEach(function(item){
+		createLine(item);
+	});
+	
+	function createLine(item){
+		var tdRegister = document.createElement('td');
+		var tdName = document.createElement('td');
+		
+		tdRegister.textContent = item.registerNumber;
+		tdName.textContent = item.name;
+		
+		var tr = document.createElement('tr');
+		tr.appendChild(tdRegister);
+		tr.appendChild(tdName);
+		
+		myTable.appendChild(tr);
+	}
+ 	
+
+</script>
+</html>
